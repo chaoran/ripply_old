@@ -1,5 +1,5 @@
 {
-  "name": "rippify",
+  "name": "ripply",
   "version": "0.0.0",
   "description": "A social network app.",
   "main": "index.js",
@@ -8,11 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/chaoran/rippify.git"
+    "url": "git://github.com/chaoran/fluxify.git"
   },
   "author": "Chaoran Yang <chaorany@me.com>",
   "license": "BSD",
   "bugs": {
-    "url": "https://github.com/chaoran/rippify/issues"
+    "url": "https://github.com/chaoran/fluxify/issues"
   }
 }
