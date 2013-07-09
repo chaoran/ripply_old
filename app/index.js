@@ -1,6 +1,5 @@
 var express = require('express')
-  , routes = require('./routes')
-  , app = express();
+  , app = module.exports = express();
 
 app.configure('development', function() {
   app.use(express.logger('dev'));
@@ -8,11 +7,15 @@ app.configure('development', function() {
 
 app.configure(function(){
   app.use(express.bodyParser());
-  routes(app);
+  app.use(app.router);
 });
 
 app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-module.exports = app;
+app.configure('test', function(){
+  app.use(express.errorHandler());
+});
+
+require('./routes')(app);

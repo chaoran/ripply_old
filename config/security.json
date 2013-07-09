@@ -1,0 +1,11 @@
+{
+  "development": {
+    "bcryptStrength": 10
+  },
+  "test": {
+    "bcryptStrength": 4
+  },
+  "production": {
+    "bcryptStrength": 10
+  }
+}
