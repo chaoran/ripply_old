@@ -1,5 +1,6 @@
 var bcrypt = require('bcrypt')
-  , db = require('../../lib/mysql');
+  , db = require('../../lib/mysql')
+  , config = require('../../config').security;
 
 var User = module.exports = function(body) {
   this.email = body.email;
@@ -53,7 +54,7 @@ User.prototype = {
   }),
   encryptPassword: function(callback) {
     var that = this;
-    bcrypt.genSalt(this.config.bcryptStrength, function(err, salt) {
+    bcrypt.genSalt(config.bcryptStrength, function(err, salt) {
       if (err) return callback(err);
       that.passwordSalt = salt;
       bcrypt.hash(that.password, salt, function(err, hash) {
@@ -68,7 +69,3 @@ User.prototype = {
     bcrypt.compare(password, this.passwordHash, callback);
   },
 };
-
-Object.defineProperty(User.prototype, 'config', {
-  value: require('../../config/security')[require('..').settings.env]
-});
