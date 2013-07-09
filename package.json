@@ -16,6 +16,7 @@
     "url": "https://github.com/chaoran/fluxify/issues"
   },
   "dependencies": {
+    "express": "*",
     "mysql": "*",
     "neutron": "*"
   }
