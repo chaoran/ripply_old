@@ -4,7 +4,7 @@ var crypto = require('crypto')
 var Token = module.exports = function(body) {
   this.clientId = body.clientId;
   this.userId = body.userId;
-  this.permissions = body.permissions || 'read';
+  this.permissions = body.permissions || 'basic';
 
   this.accessToken = generateToken();
   this.refreshToken = generateToken();
@@ -28,24 +28,32 @@ Token.prototype = {
       }
     );
   }),
+  expire: db.connected(function(conn, callback) {
+    this.expired = true;
+
+    conn.query(
+      'UPDATE tokens SET ? WHERE ?', 
+      [
+        { expired: this.expired }, 
+        { id: this.id }
+      ], 
+      callback
+    );
+  }),
   refresh: db.connected(function(conn, callback) {
     this.refreshToken = generateToken();
     this.accessToken = generateToken();
     this.updated_at = new Date();
     this.expired = false;
 
-    conn.query('UPDATE tokens SET ? WHERE ?', [{
-      refreshToken: this.refreshToken,
-      accessToken: this.accessToken,
-      expired: false,
-      updated_at: this.updated_at
-    }, { id: this.id }], function(err, result) {
-      if (err) return callback(err);
-      if (result.changedRows !== 1) 
-        return callback(new Error('trying to update an non-existing record'));
-
-      callback(null);
-    });
+    conn.query(
+      'UPDATE tokens SET ? WHERE ?', 
+      [
+        { refreshToken: this.refreshToken, accessToken: this.accessToken,
+          expired: false, updated_at: this.updated_at }, 
+        { id: this.id }
+      ], 
+      callback);
   })
 }
 
@@ -60,10 +68,10 @@ Token.create = function(body, callback) {
 };
 
 //Token.find = db.connected(function(conn, id, callback) {
-  //conn.query('SELECT * FROM tokens WHERE ?', { id: id }, function(err, rows) {
-    //if (err) return callback(err);
-    //else callback(null, Token.parse(rows[0]));
-  //});
+//conn.query('SELECT * FROM tokens WHERE ?', { id: id }, function(err, rows) {
+//if (err) return callback(err);
+//else callback(null, Token.parse(rows[0]));
+//});
 //});
 
 Token.findByRefreshToken = db.connected(function(conn, refreshToken, callback) {

@@ -17,7 +17,7 @@ module.exports = function(app) {
   //});
 
   // get a user's info
-  app.get('/users/:id', authorized.read, function(req, res, next) {
+  app.get('/users/:id', auth.token, function(req, res, next) {
     User.find(req.params.id, function(err, user) {
       if (err) return next(err);
       if (!user) return res.send(404, {

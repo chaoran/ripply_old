@@ -11,7 +11,7 @@ module.exports = function(app) {
 
     if (req.body.scope) req.body.scope.split('+').forEach(function(permission) {
       switch (permission) {
-        case "read": case "write": break;
+        case "basic": case "post": break;
         default: return res.send(400, { error: 'invalid_scope' });
       }
     });

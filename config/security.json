@@ -1,11 +1,14 @@
 {
   "development": {
-    "bcryptStrength": 10
+    "bcryptStrength": 10,
+    "accessTokenLive": 1800
   },
   "test": {
-    "bcryptStrength": 4
+    "bcryptStrength": 4,
+    "accessTokenLive": 1800
   },
   "production": {
-    "bcryptStrength": 10
+    "bcryptStrength": 10,
+    "accessTokenLive": 1800
   }
 }

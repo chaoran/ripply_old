@@ -1,7 +1,45 @@
 var User = require('../models/user')
-  , Client = require('../models/client');
+  , Token = require('../models/token')
+  , Client = require('../models/client')
+  , config = require('../../config').security;
 
 module.exports = {
+  token: function(req, res, next) {
+    var authorization = req.headers.authorization || ''
+      , parts = authorization.split(' ')
+      , schema = parts[0]
+      , accessToken = parts[1];
+
+    if (!authorization || schema !== 'Bearer' || !accessToken) {
+      return res.send(401, {
+        error: "unauthorized",
+        error_description: "missing or malformed authorization header"
+      });
+    }
+
+    Token.findByAccessToken(accessToken, function(err, token) {
+      if (err) return next(err);
+      if (!token) return res.send(401, { 
+        error: "unauthorized",
+        error_description: "invalid access token"
+      });
+
+      var time = (Date.now() - token.updated_at.getTime()) / 1000;
+
+      if (token.expired || time > config.accessTokenLive) {
+        token.expire(function(err) {
+          if (err) return next(err);
+          res.send(401, {
+            error: "unauthorized",
+            error_description: "access token expired"
+          });
+        });
+      } else {
+        req.token = token;
+        next();
+      }
+    });
+  },
   user: function(req, res, next) {
     var email = req.body.email
       , password = req.body.password;
@@ -31,7 +69,7 @@ module.exports = {
 
     if (parts.length !== 2 || schema !== 'Basic') return res.send(400, { 
       error: "invalid_request",
-      error: "invalid authorization header"
+      error_description: "invalid authorization header"
     });
 
     var credentials = new Buffer(parts[1], 'base64').toString().split(':')
