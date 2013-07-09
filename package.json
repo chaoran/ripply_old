@@ -1,0 +1,18 @@
+{
+  "name": "rippify",
+  "version": "0.0.0",
+  "description": "A social network app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/chaoran/rippify.git"
+  },
+  "author": "Chaoran Yang <chaorany@me.com>",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/chaoran/rippify/issues"
+  }
+}
