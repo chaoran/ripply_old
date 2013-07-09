@@ -14,5 +14,9 @@
   "license": "BSD",
   "bugs": {
     "url": "https://github.com/chaoran/fluxify/issues"
+  },
+  "dependencies": {
+    "mysql": "*",
+    "neutron": "*"
   }
 }
