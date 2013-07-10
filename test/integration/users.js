@@ -2,9 +2,10 @@ var request = require('../../lib/request')
   , Client = require('../../app/models/client');
 
 var user = {
+  username: "testuser",
+  password: "helloworld",
   name: "Test User",
-  email: "test@user.com",
-  password: "helloworld"
+  bio: "I'm a happy man",
 };
 
 var official, thirdparty;
@@ -39,9 +40,10 @@ describe('Users:', function() {
       it('should successfully register a user', function(done) {
         request(official).post('/users', user, function(res, body) {
           res.should.have.status(201);
-          body.should.have.keys('id', 'name', 'email');
+          body.should.have.keys('id', 'name', 'username', 'bio');
           body.name.should.equal(user.name);
-          body.email.should.equal(user.email);
+          body.username.should.equal(user.username);
+          body.bio.should.equal(user.bio);
           done();
         });
       });

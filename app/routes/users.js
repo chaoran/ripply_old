@@ -14,7 +14,12 @@ module.exports = function(app) {
         delete user.passwordSalt;
 
         res.location('users/' + user.id);
-        res.send(201, user);
+        res.send(201, {
+          id: user.id,
+          name: user.name,
+          username: user.username,
+          bio: user.bio
+        });
       });
     }
   );
@@ -30,7 +35,12 @@ module.exports = function(app) {
       delete user.passwordHash;
       delete user.passwordSalt;
 
-      res.send(200, user);
+      res.send(200, {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        bio: user.bio
+      });
     });
   });
 };

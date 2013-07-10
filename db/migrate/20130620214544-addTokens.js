@@ -6,10 +6,10 @@ module.exports = {
       t.string("accessToken", { limit: 24 });
       t.string("refreshToken", { limit: 24 });
       t.string("permissions", { limit: 64 });
+      t.boolean("expired");
 
-      t.timestamp("created_at", { null: false });
-      t.timestamp("updated_at", { null: false });
-      t.boolean("expired", { default: 0 });
+      t.timestamp("createdAt", { null: false });
+      t.timestamp("updatedAt", { null: false });
     });
 
     this.addIndex("tokens", [ 'clientId', 'userId' ], { unique: true });

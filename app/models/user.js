@@ -3,8 +3,11 @@ var bcrypt = require('bcrypt')
   , config = require('../../config').security;
 
 var User = module.exports = function(body) {
-  this.email = body.email;
+  this.username = body.username;
   this.name = body.name;
+  this.bio = body.bio;
+
+  this.createdAt = new Date();
 
   // virtual property
   Object.defineProperty(this, 'password', {
@@ -29,9 +32,9 @@ User.find = db.connected(function(conn, id, callback) {
   });
 });
 
-User.findByEmail = db.connected(function(conn, email, callback) {
+User.findByUsername = db.connected(function(conn, username, callback) {
   conn.query(
-    "SELECT * FROM users WHERE ?", { email: email }, function(err, rows) {
+    "SELECT * FROM users WHERE ?", { username: username }, function(err, rows) {
     if (err) return callback(err);
     callback(null, rows.length > 0? User.parse(rows[0]) : null);
   });

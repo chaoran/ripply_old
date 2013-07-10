@@ -4,8 +4,9 @@ module.exports = {
       t.string("key", { null: false, limit: 16 });
       t.string("secret", { null: false, limit: 32 });
       t.string("name", { null: false });
-      t.boolean("trusted", { default: 0 });
+      t.boolean("trusted");
     });
+
     this.addIndex("clients", "key", { unique: true });
   },
   down: function() {

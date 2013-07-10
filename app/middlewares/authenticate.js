@@ -24,7 +24,7 @@ module.exports = {
         message: "invalid access token"
       });
 
-      var time = (Date.now() - token.updated_at.getTime()) / 1000;
+      var time = (Date.now() - token.updatedAt.getTime()) / 1000;
 
       if (token.expired || time > config.accessTokenLive) {
         token.expire(function(err) {
@@ -41,14 +41,14 @@ module.exports = {
     });
   },
   user: function(req, res, next) {
-    var email = req.body.email
+    var username = req.body.username
       , password = req.body.password;
 
-    User.findByEmail(email, function(err, user) {
+    User.findByUsername(username, function(err, user) {
       if (err) return next(err);
       if (!user) return res.send(401, {
         error: "invalid_credentials",
-        message: "invalid user email/password"
+        message: "invalid user username/password"
       });
 
       user.authenticate(password, function(err, authenticated) {

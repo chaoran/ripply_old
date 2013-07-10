@@ -8,7 +8,7 @@ var Token = module.exports = function(body) {
 
   this.accessToken = generateToken();
   this.refreshToken = generateToken();
-  this.created_at = this.updated_at = new Date();
+  this.createdAt = this.updatedAt = new Date();
 };
 
 function generateToken() {
@@ -43,14 +43,14 @@ Token.prototype = {
   refresh: db.connected(function(conn, callback) {
     this.refreshToken = generateToken();
     this.accessToken = generateToken();
-    this.updated_at = new Date();
+    this.updatedAt = new Date();
     this.expired = false;
 
     conn.query(
       'UPDATE tokens SET ? WHERE ?', 
       [
         { refreshToken: this.refreshToken, accessToken: this.accessToken,
-          expired: false, updated_at: this.updated_at }, 
+          expired: false, updatedAt: this.updatedAt }, 
         { id: this.id }
       ], 
       callback);
