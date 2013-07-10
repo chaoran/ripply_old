@@ -4,17 +4,20 @@ var User = require('../models/user')
 
 module.exports = function(app) {
   // register a user
-  //app.post('/users', auth.client, authorized.super, function(req, res, next) {
-    //User.create(req.body, function(err, user) {
-      //if (err) return next(err);
+  app.post(
+    '/users', auth.client, authorized.register, 
+    function(req, res, next) {
+      User.create(req.body, function(err, user) {
+        if (err) return next(err);
 
-      //delete user.passwordHash;
-      //delete user.passwordSalt;
+        delete user.passwordHash;
+        delete user.passwordSalt;
 
-      //res.location('users/' + user.id);
-      //res.send(201, user);
-    //});
-  //});
+        res.location('users/' + user.id);
+        res.send(201, user);
+      });
+    }
+  );
 
   // get a user's info
   app.get('/users/:id', auth.token, function(req, res, next) {

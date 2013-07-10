@@ -13,7 +13,7 @@ module.exports = {
     if (!authorization || schema !== 'Bearer' || !accessToken) {
       return res.send(401, {
         error: "unauthorized",
-        error_description: "missing or malformed authorization header"
+        message: "missing or malformed authorization header"
       });
     }
 
@@ -21,7 +21,7 @@ module.exports = {
       if (err) return next(err);
       if (!token) return res.send(401, { 
         error: "unauthorized",
-        error_description: "invalid access token"
+        message: "invalid access token"
       });
 
       var time = (Date.now() - token.updated_at.getTime()) / 1000;
@@ -31,7 +31,7 @@ module.exports = {
           if (err) return next(err);
           res.send(401, {
             error: "unauthorized",
-            error_description: "access token expired"
+            message: "access token expired"
           });
         });
       } else {
@@ -48,13 +48,13 @@ module.exports = {
       if (err) return next(err);
       if (!user) return res.send(401, {
         error: "invalid_credentials",
-        error_description: "invalid user email/password"
+        message: "invalid user email/password"
       });
 
       user.authenticate(password, function(err, authenticated) {
         if (!authenticated) return res.send(401, {
           error: "invalid_credentials",
-          error_description: "invalid user email/password"
+          message: "invalid user email/password"
         });
 
         req.user = user;
@@ -69,7 +69,7 @@ module.exports = {
 
     if (parts.length !== 2 || schema !== 'Basic') return res.send(400, { 
       error: "invalid_request",
-      error_description: "invalid authorization header"
+      message: "invalid authorization header"
     });
 
     var credentials = new Buffer(parts[1], 'base64').toString().split(':')
@@ -78,14 +78,14 @@ module.exports = {
 
     if (!key || !secret) return res.send(400, { 
       error: "invalid_request",
-      error_description: "invalid client credentials"
+      message: "invalid client credentials"
     });
 
     Client.findByKey(key, function(err, client) {
       if (err) return next(err);
       if (!client || client.secret !== secret) return res.send(401, {
         error: "invalid_client",
-        error_description: "wrong client credentials"
+        message: "wrong client credentials"
       });
 
       req.client = client;

@@ -7,6 +7,9 @@ module.exports = {
   },
   register: function(req, res, next) {
     if (req.client.trusted === true) next();
-    else res.send(400, { error: "lack_permission", });
+    else res.send(403, { 
+      error: "forbidden_request", 
+      message: "method is reserved for internal use"
+    });
   }
 };
