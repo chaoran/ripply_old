@@ -28,7 +28,7 @@ describe('Users:', function() {
         request(thirdparty).post('/users', user, function(res, body) {
           res.should.have.status(403);
           body.should.have.keys('error', 'message');
-          body.error.should.equal('forbidden_request');
+          body.error.should.equal('forbidden');
           done();
         });
       });
@@ -54,7 +54,7 @@ describe('Users:', function() {
     });
   });
 
-  describe('after acquire an access token', function() {
+  describe('after acquiring an access token', function() {
     before(function(done) {
       request(official).post('/tokens', {
         username: user.username,
