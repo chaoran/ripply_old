@@ -3,7 +3,7 @@ module.exports = {
     this.createTable("messages", function(t) {
       t.references("user", { null: false });
       t.string("body", { limit: 140 });
-      t.timestamp("createdAt");
+      t.timestamp("createdAt", { null: false });
     });
   },
   down: function() {
