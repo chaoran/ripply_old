@@ -1,13 +1,14 @@
 var should = require('should')
   , request = require('../../lib/request')
   , User = require('../../app/models/user')
+  , Token = require('../../app/models/token')
   , Client = require('../../app/models/client');
 
 var message = {
   body: "This is a new message!",
 };
 
-var user, client, token;
+var user, client, token, read;
 
 before(function() {
   require('../../bin/server');
@@ -17,7 +18,7 @@ before(function(done) {
   user = new User({
     username: 'testmessage',
     password: 'message',
-  })
+  });
   user.save(done)
 });
 
@@ -26,6 +27,21 @@ before(function(done) {
     name: 'testmessageclient'
   });
   client.save(done);
+});
+
+before(function(done) {
+  var user = new User({
+    username: 'messagereader',
+    password: 'message1',
+  });
+
+  user.save(function(err, user) {
+    read = new Token({
+      clientId: client.id,
+      userId: user.id,
+    });
+    read.save(done);
+  });
 });
 
 describe('Messages:', function() {
@@ -87,6 +103,41 @@ describe('Messages:', function() {
         request(token).get('/messages/' + message.id, function(res, body) {
           res.should.have.status(200);
           body.should.eql(message);
+          done();
+        });
+      });
+    });
+
+    describe('when try to up my own message', function() {
+      describe('PUT /messages/:id', function() {
+        it('should return forbidden error', function(done) {
+          request(token).put('/messages/' + message.id, function(res, body) {
+            res.should.have.status(403);
+            body.should.have.keys('error', 'message');
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  describe('another user', function() {
+    describe('GET /messages/:id', function() {
+      it('should return the posted message', function(done) {
+        request(read).get('/messages/' + message.id, function(res, body) {
+          res.should.have.status(200);
+          body.should.eql(message);
+          done();
+        });
+      });
+    });
+    describe('PUT /messages/:id', function() {
+      it('should up the message', function(done) {
+        request(read).put('/messages/' + message.id, function(res, body) {
+          res.should.have.status(200);
+          body.should.have.keys('id', 'messageId', 'userId', 'createdAt');
+          body.messageId.should.equal(message.id);
+          body.userId.should.equal(read.userId);
           done();
         });
       });

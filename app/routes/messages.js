@@ -1,10 +1,13 @@
 var express = require('express')
-  , ep = express()
+  , messages = express()
   , auth = require('../middlewares/authenticate')
   , authorized = require('../middlewares/authorized')
-  , Message = require('../models/message');
+  , Message = require('../models/message')
+  , Up = require('../models/up');
 
-ep.param('message', function(req, res, next, id) {
+messages.use(auth.token);
+
+messages.param('id', function(req, res, next, id) {
   Message.find(id, function(err, message) {
     if (err) return next(err);
     if (!message) return res.send(404, {
@@ -18,7 +21,7 @@ ep.param('message', function(req, res, next, id) {
   });
 });
 
-ep.post('/', auth.token, authorized.post, function(req, res, next) {
+messages.post('/', authorized.post, function(req, res, next) {
   var message = new Message(req.body);
   message.userId = req.token.userId;
   message.save(function(err, message) {
@@ -28,8 +31,25 @@ ep.post('/', auth.token, authorized.post, function(req, res, next) {
   });
 });
 
-ep.get('/:message', function(req, res, next) {
+messages.get('/:id', function(req, res, next) {
   res.send(req.message);
 });
 
-module.exports = ep;
+messages.put('/:id', function(req, res, next) {
+  var up = new Up({
+    messageId: req.message.id,
+    userId: req.token.userId
+  });
+
+  if (req.message.userId === up.userId) return res.send(403, {
+    error: 'forbidden',
+    message: "cannot up one's own message",
+  });
+
+  up.save(function(err, up) {
+    if (err) return next(err);
+    res.send(up);
+  });
+});
+
+module.exports = messages;
