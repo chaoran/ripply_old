@@ -1,9 +1,8 @@
-var User = require('../models/user')
-  , auth = require('../middlewares/authenticate')
-  , authorized = require('../middlewares/authorized');
-
 var express = require('express')
-  , ep = express();
+  , ep = express()
+  , auth = require('../middlewares/authenticate')
+  , authorized = require('../middlewares/authorized')
+  , User = require('../models/user');
 
 ep.param('id', function(req, res, next, id) {
   User.find(id, function(err, user) {
@@ -11,7 +10,7 @@ ep.param('id', function(req, res, next, id) {
       next(err);
     } else if (!user) {
       res.send(404, {
-        error: "resource_not_found",
+        error: "invalid_resource_id",
         message: "cannot find user with specified id",
         value: id
       });
@@ -22,11 +21,11 @@ ep.param('id', function(req, res, next, id) {
   });
 });
 
-ep.post('/users', auth.client, authorized.register, function(req, res, next) {
+ep.post('/', auth.client, authorized.register, function(req, res, next) {
   User.create(req.body, function(err, user) {
     if (err) return next(err);
 
-    res.location('/users/' + user.id);
+    res.location(user.id.toString());
     res.send(201, {
       id: user.id,
       username: user.username,
@@ -37,7 +36,7 @@ ep.post('/users', auth.client, authorized.register, function(req, res, next) {
 });
 
 // get a user resource
-ep.get('/users/:id', auth.token, function(req, res, next) {
+ep.get('/:id', auth.token, function(req, res, next) {
   var user = req.user;
 
   res.send(200, {
@@ -49,7 +48,7 @@ ep.get('/users/:id', auth.token, function(req, res, next) {
 });
 
 // update user profile (name, bio, email, phone)
-ep.put('/users/:id/profile', auth.token, function(req, res, next) {
+ep.put('/:id/profile', auth.token, function(req, res, next) {
   req.user.update(req.body, function(err, user) {
     if (err) return next(err);
 

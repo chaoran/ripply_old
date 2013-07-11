@@ -1,5 +1,5 @@
 module.exports = function(app) {
   app.use('/messages', require('./messages'));
-  app.use(require('./users'));
+  app.use('/users', require('./users'));
   require('./tokens')(app);
 }
