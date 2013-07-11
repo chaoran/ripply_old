@@ -8,7 +8,7 @@ ep.param('message', function(req, res, next, id) {
   Message.find(id, function(err, message) {
     if (err) return next(err);
     if (!message) return res.send(404, {
-      error: 'invalid_resource',
+      error: 'invalid_resource_id',
       message: 'cannot find message with specified id',
       value: id,
     });
