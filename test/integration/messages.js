@@ -75,6 +75,18 @@ describe('Messages:', function() {
           res.should.have.header('location', '/messages/' + body.id);
           body.body.should.equal(message.body);
           body.userId.should.equal(user.id);
+          message = body;
+          done();
+        });
+      });
+    });
+  });
+  describe('after posting a message', function() {
+    describe('GET /messages/:id', function() {
+      it('should return the posted message', function(done) {
+        request(token).get('/messages/' + message.id, function(res, body) {
+          res.should.have.status(200);
+          body.should.eql(message);
           done();
         });
       });
