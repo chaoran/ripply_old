@@ -109,7 +109,7 @@ describe('Messages:', function() {
   });
 
   describe('another user', function() {
-    var read;
+    var read, up;
 
     before(function(done) {
       var user = new User({
@@ -139,9 +139,14 @@ describe('Messages:', function() {
       it('should up the message', function(done) {
         request(read).put('/messages/' + message.id, function(res, body) {
           res.should.have.status(200);
-          body.should.have.keys('id', 'messageId', 'userId', 'createdAt');
-          body.messageId.should.equal(message.id);
-          body.userId.should.equal(read.userId);
+          done();
+        });
+      });
+    });
+    describe('PUT /messages/:id', function() {
+      it("should silently ignore the up", function(done) {
+        request(read).put('/messages/' + message.id, function(res, body) {
+          res.should.have.status(200);
           done();
         });
       });

@@ -47,8 +47,8 @@ messages.put('/:id', function(req, res, next) {
   });
 
   up.save(function(err, up) {
-    if (err) return next(err);
-    res.send(up);
+    if (err && err.code !== 'ER_DUP_ENTRY') return next(err);
+    res.send(200);
   });
 });
 
