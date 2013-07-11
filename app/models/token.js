@@ -8,7 +8,10 @@ var Token = module.exports = function(body) {
 
   this.accessToken = generateToken();
   this.refreshToken = generateToken();
+
   this.createdAt = this.updatedAt = new Date();
+  this.createdAt.setMilliseconds(0);
+  this.updatedAt.setMilliseconds(0);
 };
 
 function generateToken() {
