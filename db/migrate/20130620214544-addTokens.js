@@ -12,7 +12,6 @@ module.exports = {
       t.timestamp("updatedAt", { null: false });
     });
 
-    this.addIndex("tokens", [ 'clientId', 'userId' ], { unique: true });
     this.addIndex("tokens", 'accessToken', { unique: true });
     this.addIndex("tokens", 'refreshToken', { unique: true });
   },
