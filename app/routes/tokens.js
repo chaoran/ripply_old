@@ -4,7 +4,10 @@ var express = require('express')
 
 var tokens = module.exports = express();
 
-tokens.post('/', auth.client, auth.user, function(req, res, next) {
+tokens.use(auth.client);
+tokens.use(auth.user);
+
+tokens.post('/', function(req, res, next) {
   if (req.body.grant_type !== 'password') return res.send(400, {
     error: "unsupported_grant_type",
     message: "expects grant_type: 'password'"
@@ -35,7 +38,7 @@ tokens.post('/', auth.client, auth.user, function(req, res, next) {
 });
 
 // refresh an access token
-tokens.put('/', auth.client, auth.user, function(req, res, next) {
+tokens.put('/', function(req, res, next) {
   if (req.body.grant_type !== 'refresh_token') return res.send(400, {
     error: "unsupported_grant_type",
     message: "expects grant_type: 'refresh_token'"
