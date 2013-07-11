@@ -8,7 +8,7 @@ var message = {
   body: "This is a new message!",
 };
 
-var user, client, token, read;
+var user, client;
 
 before(function() {
   require('../../bin/server');
@@ -29,22 +29,9 @@ before(function(done) {
   client.save(done);
 });
 
-before(function(done) {
-  var user = new User({
-    username: 'messagereader',
-    password: 'message1',
-  });
-
-  user.save(function(err, user) {
-    read = new Token({
-      clientId: client.id,
-      userId: user.id,
-    });
-    read.save(done);
-  });
-});
-
 describe('Messages:', function() {
+  var token;
+
   describe('without post permission', function() {
     before(function(done) {
       request(client).post('/tokens', {
@@ -122,6 +109,23 @@ describe('Messages:', function() {
   });
 
   describe('another user', function() {
+    var read;
+
+    before(function(done) {
+      var user = new User({
+        username: 'messagereader',
+        password: 'message1',
+      });
+
+      user.save(function(err, user) {
+        read = new Token({
+          clientId: client.id,
+          userId: user.id,
+        });
+        read.save(done);
+      });
+    });
+
     describe('GET /messages/:id', function() {
       it('should return the posted message', function(done) {
         request(read).get('/messages/' + message.id, function(res, body) {
@@ -140,6 +144,15 @@ describe('Messages:', function() {
           body.userId.should.equal(read.userId);
           done();
         });
+      });
+    });
+  });
+
+  describe('DELETE /messages/:id', function() {
+    it('should destroy the message', function(done) {
+      request(token).del('/messages/' + message.id, function(res, body) {
+        res.should.have.status(200);
+        done();
       });
     });
   });

@@ -52,4 +52,18 @@ messages.put('/:id', function(req, res, next) {
   });
 });
 
+messages.del('/:id', function(req, res, next) {
+  var message = req.message;
+
+  if (message.userId === req.token.userId) {
+    req.message.destroy(function(err) {
+      if (err) return next(err);
+      res.send(200);
+    });
+  } else {
+    next(new Error('not implemented'));
+  }
+});
+
+
 module.exports = messages;

@@ -35,5 +35,10 @@ Message.prototype = {
       callback(null, that);
     });
   }),
+  destroy: db.connected(function(conn, callback) {
+    conn.query('DELETE FROM messages WHERE ?', { 
+      id: this.id 
+    }, callback);
+  })
 };
 
