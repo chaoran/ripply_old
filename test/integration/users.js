@@ -8,7 +8,7 @@ var user = {
   bio: "I'm a happy man",
 };
 
-var official, thirdparty;
+var official, thirdparty, token;
 
 describe('Users:', function() {
   before(function(done) {
@@ -41,9 +41,51 @@ describe('Users:', function() {
         request(official).post('/users', user, function(res, body) {
           res.should.have.status(201);
           body.should.have.keys('id', 'name', 'username', 'bio');
+          res.should.have.header('location', '/users/' + body.id);
           body.name.should.equal(user.name);
           body.username.should.equal(user.username);
           body.bio.should.equal(user.bio);
+
+          user.id = body.id;
+
+          done();
+        });
+      });
+    });
+  });
+
+  describe('after acquire an access token', function() {
+    before(function(done) {
+      request(official).post('/tokens', {
+        username: user.username,
+        password: user.password,
+        grant_type: 'password',
+      }, function(res, body) {
+        res.should.have.status(200);
+        body.should.have.keys(
+          'access_token', 'expires_in', 'token_type', 'scope', 'refresh_token'
+        );
+        token = body;
+        done();
+      });
+    });
+
+    describe('PUT /users/:id/profile', function() {
+      it('should update user profile', function(done) {
+        var update = {
+          email: 'new@email.com',
+          phone: '123-456-7890',
+          name: 'New Name',
+          bio: 'A new bio'
+        };
+
+        var url = '/users/' + user.id + '/profile';
+
+        request(token).put(url, update, function(res, body) {
+          res.should.have.status(200);
+          body.should.have.keys(
+            'id', 'name', 'bio', 'email', 'phone'
+          );
           done();
         });
       });

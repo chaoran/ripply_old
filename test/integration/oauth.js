@@ -123,7 +123,6 @@ describe('OAuth:', function() {
           grant_type: 'refresh_token',
           refresh_token: token.refresh_token
         }, function(res, body) {
-          body.should.be.a('object');
           res.should.have.status(200);
           body.should.have.keys(
             'access_token', 'expires_in', 'token_type', 'scope', 

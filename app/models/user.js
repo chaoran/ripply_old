@@ -55,6 +55,20 @@ User.prototype = {
       callback(null, that);
     });
   }),
+  update: db.connected(function(conn, body, callback) {
+    var that = this;
+
+    conn.query(
+      "UPDATE users SET ? WHERE ?", 
+      [ body, { id: this.id }], 
+      function(err, result) {
+        if (err) return callback(err);
+
+        for (var key in body) that[key] = body[key];
+        callback(null, that);
+      }
+    );
+  }),
   encryptPassword: function(callback) {
     var that = this;
     bcrypt.genSalt(config.bcryptStrength, function(err, salt) {

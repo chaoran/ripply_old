@@ -8,6 +8,9 @@ module.exports = {
       t.string('name');
       t.string('bio');
 
+      t.string('email');
+      t.string('phone');
+
       t.timestamp('createdAt');
     });
 

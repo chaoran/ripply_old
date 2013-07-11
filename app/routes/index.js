@@ -1,4 +1,4 @@
 module.exports = function(app) {
-  require('./users')(app);
+  app.use(require('./users'));
   require('./tokens')(app);
 }

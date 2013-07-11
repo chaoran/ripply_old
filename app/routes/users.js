@@ -2,45 +2,65 @@ var User = require('../models/user')
   , auth = require('../middlewares/authenticate')
   , authorized = require('../middlewares/authorized');
 
-module.exports = function(app) {
-  // register a user
-  app.post(
-    '/users', auth.client, authorized.register, 
-    function(req, res, next) {
-      User.create(req.body, function(err, user) {
-        if (err) return next(err);
+var express = require('express')
+  , ep = express();
 
-        delete user.passwordHash;
-        delete user.passwordSalt;
-
-        res.location('users/' + user.id);
-        res.send(201, {
-          id: user.id,
-          name: user.name,
-          username: user.username,
-          bio: user.bio
-        });
+ep.param('id', function(req, res, next, id) {
+  User.find(id, function(err, user) {
+    if (err) {
+      next(err);
+    } else if (!user) {
+      res.send(404, {
+        error: "resource_not_found",
+        message: "cannot find user with specified id",
+        value: id
       });
+    } else {
+      req.user = user; 
+      next();
     }
-  );
+  });
+});
 
-  // get a user's info
-  app.get('/users/:id', auth.token, function(req, res, next) {
-    User.find(req.params.id, function(err, user) {
-      if (err) return next(err);
-      if (!user) return res.send(404, {
-        message: "cannot find user with id: " + req.params.id
-      });
+ep.post('/users', auth.client, authorized.register, function(req, res, next) {
+  User.create(req.body, function(err, user) {
+    if (err) return next(err);
 
-      delete user.passwordHash;
-      delete user.passwordSalt;
-
-      res.send(200, {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        bio: user.bio
-      });
+    res.location('/users/' + user.id);
+    res.send(201, {
+      id: user.id,
+      username: user.username,
+      name: user.name,
+      bio: user.bio,
     });
   });
-};
+});
+
+// get a user resource
+ep.get('/users/:id', auth.token, function(req, res, next) {
+  var user = req.user;
+
+  res.send(200, {
+    id: user.id,
+    username: user.username,
+    name: user.name,
+    bio: user.bio,
+  });
+});
+
+// update user profile (name, bio, email, phone)
+ep.put('/users/:id/profile', auth.token, function(req, res, next) {
+  req.user.update(req.body, function(err, user) {
+    if (err) return next(err);
+
+    res.send(200, {
+      id: user.id,
+      name: user.name,
+      bio: user.bio,
+      email: user.email,
+      phone: user.phone,
+    });
+  });
+});
+
+module.exports = ep;
