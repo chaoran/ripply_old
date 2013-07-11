@@ -8,6 +8,7 @@ var User = module.exports = function(body) {
   this.bio = body.bio;
 
   this.createdAt = new Date();
+  this.createdAt.setMilliseconds(0);
 
   // virtual property
   Object.defineProperty(this, 'password', {

@@ -31,6 +31,7 @@ ep.post('/', auth.client, authorized.register, function(req, res, next) {
       username: user.username,
       name: user.name,
       bio: user.bio,
+      createdAt: user.createdAt
     });
   });
 });
@@ -44,6 +45,7 @@ ep.get('/:id', auth.token, function(req, res, next) {
     username: user.username,
     name: user.name,
     bio: user.bio,
+    createdAt: user.createdAt
   });
 });
 

@@ -77,11 +77,7 @@ describe('OAuth:', function() {
       it("should return user profile", function(done) {
         request(token).get('/users/' + user.id, function(res, body) {
           res.should.have.status(200);
-          body.should.have.keys('id', 'name', 'username', 'bio');
-          body.id.should.equal(user.id);
-          body.name.should.equal(user.name);
-          body.username.should.equal(user.username);
-          body.bio.should.equal(user.bio);
+          body.should.have.property('username');
           done();
         });
       });
@@ -149,11 +145,7 @@ describe('OAuth:', function() {
       it("should return user profile", function(done) {
         request(token).get('/users/' + user.id, function(res, body) {
           res.should.have.status(200);
-          body.should.have.keys('id', 'name', 'username', 'bio');
-          body.id.should.equal(user.id);
-          body.username.should.equal(user.username);
-          body.name.should.equal(user.name);
-          body.bio.should.equal(user.bio);
+          body.should.have.property('username');
           done();
         });
       });

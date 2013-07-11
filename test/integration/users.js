@@ -40,7 +40,7 @@ describe('Users:', function() {
       it('should successfully register a user', function(done) {
         request(official).post('/users', user, function(res, body) {
           res.should.have.status(201);
-          body.should.have.keys('id', 'name', 'username', 'bio');
+          body.should.have.keys('id', 'name', 'username', 'bio', 'createdAt');
           res.should.have.header('location', '/users/' + body.id);
           body.name.should.equal(user.name);
           body.username.should.equal(user.username);
