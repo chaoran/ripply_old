@@ -10,11 +10,11 @@ app.configure(function(){
   app.use(app.router);
 });
 
-app.configure('development', function(){
+app.configure('development', function() {
   app.use(express.errorHandler());
 });
 
-app.configure('test', function(){
+app.configure('test', function() {
   app.use(express.errorHandler());
 });
 
