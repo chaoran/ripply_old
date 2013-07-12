@@ -48,7 +48,7 @@ describe('Messages:', function() {
     describe('POST /messages', function() {
       it('should return an error', function(done) {
         request(token).post('/messages', message, function(res, body) {
-          res.should.have.status(401);
+          res.should.have.status(400);
           body.should.have.keys('error', 'message');
           body.error.should.equal('invalid_scope');
           done();
@@ -62,7 +62,7 @@ describe('Messages:', function() {
         grant_type: 'password',
         username: user.username,
         password: user.password,
-        scope: 'basic+post',
+        scope: 'basic+post+up',
       }, function(res, body) {
         res.should.have.status(200);
         token = body;
@@ -121,6 +121,7 @@ describe('Messages:', function() {
         read = new Token({
           clientId: client.id,
           userId: user.id,
+          permissions: 'basic+up',
         });
         read.save(done);
       });

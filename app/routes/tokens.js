@@ -15,7 +15,7 @@ tokens.post('/', function(req, res, next) {
 
   if (req.body.scope) req.body.scope.split('+').forEach(function(permission) {
     switch (permission) {
-      case "basic": case "post": break;
+      case "basic": case "post": case 'up': break;
       default: return res.send(400, { error: 'invalid_scope' });
     }
   });
