@@ -4,7 +4,8 @@ var querystring = require('querystring')
   , User = require('../../app/models/user')
   , Token = require('../../app/models/token')
   , Client = require('../../app/models/client')
-  , request = require('../../lib/request');
+  , request = require('../../lib/request')
+  , redis = require('../../lib/redis');
 
 describe('OAuth:', function() {
   var user, client, token;
@@ -76,7 +77,8 @@ describe('OAuth:', function() {
     describe('GET /users/:user_id', function() {
       it("should return user profile", function(done) {
         request(token).get('/users/' + user.id, function(res, body) {
-          res.should.have.status(200);
+          if (typeof body !== 'object') throw body;
+          res.statusCode.should.equal(200);
           body.should.have.property('username');
           done();
         });
@@ -85,11 +87,13 @@ describe('OAuth:', function() {
 
   });
   describe('after access token expires', function() {
-    before(function() {
+    before(function(done) {
       var security = require('../../config').security;
 
       this.clock = sinon.useFakeTimers(Date.now());
       this.clock.tick(security.accessTokenLive * 1000);
+
+      redis.del(token.access_token, done);
     });
 
     describe('GET /users/:id', function() {

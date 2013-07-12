@@ -1,0 +1,14 @@
+{
+  "development": {
+    "port": 6000,
+    "host": "127.0.0.1"
+  },
+  "test": {
+    "port": 6379,
+    "host": "127.0.0.1"
+  },
+  "production": {
+    "port": 6400,
+    "host": "127.0.0.1"
+  }
+}

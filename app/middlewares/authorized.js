@@ -2,10 +2,10 @@ var Token = require('../models/token');
 
 module.exports = {
   post: function(req, res, next) {
-    if (req.token.permissions.indexOf('post') >= 0) next();
-    else res.send(401, { 
+    if (req.session.permissions.indexOf('post') >= 0) next();
+    else res.send(400, { 
       error: "invalid_scope", 
-      message: "access token lacks proper scope"
+      message: "access token do not have 'post' permission"
     });
   },
   up: function(req, res, next) {

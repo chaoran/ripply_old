@@ -39,6 +39,7 @@ describe('Messages:', function() {
         username: user.username,
         password: user.password,
       }, function(res, body) {
+        if (res.statusCode === 500) throw body;
         res.should.have.status(200);
         token = body;
         done();
@@ -90,6 +91,20 @@ describe('Messages:', function() {
         request(token).get('/messages/' + message.id, function(res, body) {
           res.should.have.status(200);
           body.should.eql(message);
+          done();
+        });
+      });
+    });
+
+    describe('GET /messages', function() {
+      it('should return a list with the posted message', function(done) {
+        request(token).get('/messages', function(res, body) {
+          res.should.have.status(200);
+          body.should.be.an.instanceOf(Array);
+          body.should.have.length(1);
+          body[0].should.have.keys(
+            'id', 'name', 'username', 'body', 'createdAt', 'timestamp'
+          );
           done();
         });
       });

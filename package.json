@@ -19,7 +19,8 @@
     "bcrypt": "*",
     "express": "*",
     "mysql": "*",
-    "neutron": "*"
+    "neutron": "*",
+    "redis": "*"
   },
   "devDependencies": {
     "jake": "*",

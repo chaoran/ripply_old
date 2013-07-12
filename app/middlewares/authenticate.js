@@ -1,6 +1,7 @@
 var User = require('../models/user')
   , Token = require('../models/token')
   , Client = require('../models/client')
+  , Session = require('../../lib/session')
   , config = require('../../config').security;
 
 module.exports = {
@@ -17,27 +18,40 @@ module.exports = {
       });
     }
 
-    Token.findByAccessToken(accessToken, function(err, token) {
+    Session.find(accessToken, function(err, session) {
       if (err) return next(err);
-      if (!token) return res.send(401, { 
-        error: "unauthorized",
-        message: "invalid access token"
-      });
 
-      var time = (Date.now() - token.updatedAt.getTime()) / 1000;
-
-      if (token.expired || time > config.accessTokenLive) {
-        token.expire(function(err) {
-          if (err) return next(err);
-          res.send(401, {
-            error: "unauthorized",
-            message: "access token expired"
-          });
-        });
-      } else {
-        req.token = token;
-        next();
+      if (session) {
+        req.session = session;
+        return next();
       }
+
+      Token.findByAccessToken(accessToken, function(err, token) {
+        if (err) return next(err);
+        if (!token) return res.send(401, { 
+          error: "unauthorized",
+          message: "invalid access token"
+        });
+
+        var time = (Date.now() - token.updatedAt.getTime()) / 1000;
+
+        if (token.expired || time > config.accessTokenLive) {
+          return token.expire(function(err) {
+            if (err) return next(err);
+            res.send(401, {
+              error: "unauthorized",
+              message: "access token expired"
+            });
+          });
+        }
+
+        session = new Session(token);
+        session.save(function(err) {
+          if (err) return next(err);
+          req.session = session;
+          next();
+        });
+      });
     });
   },
   user: function(req, res, next) {
