@@ -14,8 +14,4 @@ app.configure('development', function() {
   app.use(express.errorHandler());
 });
 
-app.configure('test', function() {
-  app.use(express.errorHandler());
-});
-
 require('./routes')(app);
