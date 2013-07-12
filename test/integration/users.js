@@ -27,8 +27,7 @@ describe('Users:', function() {
       it('should not register a user', function(done) {
         request(thirdparty).post('/users', user, function(res, body) {
           res.should.have.status(403);
-          body.should.have.keys('error', 'message');
-          body.error.should.equal('forbidden');
+          body.should.equal('Forbidden');
           done();
         });
       });
