@@ -20,5 +20,10 @@
     "express": "*",
     "mysql": "*",
     "neutron": "*"
+  },
+  "devDependencies": {
+    "jake": "*",
+    "mocha": "*",
+    "should": "*"
   }
 }
