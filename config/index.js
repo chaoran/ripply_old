@@ -1,8 +1,21 @@
-var env = process.env.NODE_ENV || 'development';
+var path = require('path')
+  , env = process.env.NODE_ENV || 'development';
 
 module.exports = {
-  database: require('./database')[env],
-  security: require('./security')[env],
+  mysql: require('./mysql')[env],
   redis: require('./redis')[env],
-  mailbox: require('./mailbox')
+  server: {
+    port: (env === 'production') ? 80 : 3000
+  },
+  mailbox: {
+    ttl: 60 * 60 * 1000,
+    batch: 30,
+    dirname: path.resolve(__dirname, '../db/mailbox')
+  },
+  session: {
+    live: 30 * 60 * 1000
+  },
+  bcrypt: {
+    strength: (env === 'test') ? 3 : 10
+  }
 };
