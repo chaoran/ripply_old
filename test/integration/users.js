@@ -1,4 +1,5 @@
 var should = require('should')
+  , app = require('../../app')
   , request = require('../../lib/request')
   , Client = require('../../app/models/client');
 
@@ -10,10 +11,6 @@ var user = {
 };
 
 var official, thirdparty, token;
-
-before(function() {
-  require('../../bin/server');
-});
 
 describe('Users:', function() {
   before(function(done) {

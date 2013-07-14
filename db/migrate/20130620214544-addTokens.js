@@ -6,7 +6,6 @@ module.exports = {
       t.string("accessToken", { limit: 24 });
       t.string("refreshToken", { limit: 24 });
       t.string("permissions", { limit: 64 });
-      t.boolean("expired");
 
       t.timestamp("createdAt", { null: false });
       t.timestamp("updatedAt", { null: false });

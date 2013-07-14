@@ -1,5 +1,6 @@
 var should = require('should')
   , request = require('../../lib/request')
+  , app = require('../../app')
   , User = require('../../app/models/user')
   , Token = require('../../app/models/token')
   , Client = require('../../app/models/client');
@@ -9,10 +10,6 @@ var message = {
 };
 
 var user, client;
-
-before(function() {
-  require('../../bin/server');
-});
 
 before(function(done) {
   user = new User({
@@ -39,7 +36,7 @@ describe('Messages:', function() {
         username: user.username,
         password: user.password,
       }, function(res, body) {
-        if (res.statusCode === 500) throw body;
+        body.should.be.a('object');
         res.should.have.status(200);
         token = body;
         done();
@@ -49,6 +46,7 @@ describe('Messages:', function() {
     describe('POST /messages', function() {
       it('should return an error', function(done) {
         request(token).post('/messages', message, function(res, body) {
+          body.should.be.a('object');
           res.should.have.status(400);
           body.should.have.keys('error', 'message');
           body.error.should.equal('invalid_scope');
@@ -145,6 +143,7 @@ describe('Messages:', function() {
     describe('GET /messages/:id', function() {
       it('should return the posted message', function(done) {
         request(read).get('/messages/' + message.id, function(res, body) {
+          body.should.be.a('object');
           res.should.have.status(200);
           body.should.eql(message);
           done();

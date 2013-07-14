@@ -1,28 +1,38 @@
 var fs = require('fs')
-  , redis = require('./redis')
-  , config = require('../config').mailbox
+  , redis = require('../../lib/redis')
+  , config = require('../../config').mailbox
   , batch = config.batch
-  , ttl = config.ttl
   , dirname = config.dirname;
 
-var Mailbox = module.exports = function(body) {
-  this.key = '@' + (body.userId || body.id);
+var Mailbox = module.exports = function(userId) {
+  this.key = '@' + userId;
+};
+
+Mailbox.find = function(userId, callback) {
+  return new Mailbox(userId);
 };
 
 Mailbox.prototype = {
-  persist: function(callback) {
+  offline: function(callback) {
     var key = this.key;
 
     redis.dump(key, function(err, data) {
-      fs.writeFile(dirname + '/' + key, callback);
+      if (err) return callback(err);
+      if (!data) return callback(null);
+
+      fs.writeFile(dirname + '/' + key, data, callback);
     });
   },
-  restore: function(callback) {
+  online: function(callback) {
     var key = this.key
 
-    fs.readFile(dirname + '/' + key, function(err, data) {
+    fs.readFile(dirname + '/' + key, {
+      encoding: 'utf8'
+    }, function(err, data) {
+      if (err && err.code !== 'ENOENT') return callback(err);
       if (!data) return callback(null);
-      redis.restore(key, ttl, data, callback);
+
+      redis.restore(key, config.ttl, data, callback);
     });
   },
   write: function(id, score, callback) {

@@ -1,11 +1,11 @@
 var querystring = require('querystring')
   , should = require('should')
   , sinon = require('sinon')
+  , app = require('../../app')
   , User = require('../../app/models/user')
   , Token = require('../../app/models/token')
   , Client = require('../../app/models/client')
-  , request = require('../../lib/request')
-  , redis = require('../../lib/redis');
+  , request = require('../../lib/request');
 
 describe('OAuth:', function() {
   var user, client, token;
@@ -31,14 +31,11 @@ describe('OAuth:', function() {
     });
   });
 
-  before(function() {
-    require('../../bin/server');
-  });
-
   describe('when request does not carry an access token', function() {
     describe('GET /users/:id', function() {
       it("should return an error", function(done) {
         request().get('/users/' + user.id, function(res, body) {
+          body.should.be.a('object');
           res.should.have.status(401);
           body.should.have.keys('error', 'message');
           body.error.should.equal('unauthorized');
@@ -55,6 +52,7 @@ describe('OAuth:', function() {
           grant_type: 'password',
           scope: 'basic+post'
         }, function(res, body) {
+          body.should.be.a('object');
           res.should.have.status(200);
           body.should.have.keys(
             'access_token', 'expires_in', 'token_type', 'scope', 'refresh_token'
@@ -77,7 +75,7 @@ describe('OAuth:', function() {
     describe('GET /users/:user_id', function() {
       it("should return user profile", function(done) {
         request(token).get('/users/' + user.id, function(res, body) {
-          if (typeof body !== 'object') throw body;
+          body.should.be.a('object');
           res.statusCode.should.equal(200);
           body.should.have.property('username');
           done();
@@ -87,18 +85,17 @@ describe('OAuth:', function() {
 
   });
   describe('after access token expires', function() {
-    before(function(done) {
-      var security = require('../../config').security;
+    before(function() {
+      var session = require('../../config').session;
 
       this.clock = sinon.useFakeTimers(Date.now());
-      this.clock.tick(security.accessTokenLive * 1000);
-
-      redis.del(token.access_token, done);
+      this.clock.tick(session.live);
     });
 
     describe('GET /users/:id', function() {
       it("should return an error", function(done) {
         request(token).get('/users/' + user.id, function(res, body) {
+          body.should.be.a('object');
           res.should.have.status(401);
           body.should.have.keys('error', 'message');
           body.error.should.equal('unauthorized');
@@ -123,6 +120,7 @@ describe('OAuth:', function() {
           grant_type: 'refresh_token',
           refresh_token: token.refresh_token
         }, function(res, body) {
+          body.should.be.a('object');
           res.should.have.status(200);
           body.should.have.keys(
             'access_token', 'expires_in', 'token_type', 'scope', 
@@ -148,6 +146,7 @@ describe('OAuth:', function() {
     describe('GET /users/:user_id', function() {
       it("should return user profile", function(done) {
         request(token).get('/users/' + user.id, function(res, body) {
+          body.should.be.a('object');
           res.should.have.status(200);
           body.should.have.property('username');
           done();

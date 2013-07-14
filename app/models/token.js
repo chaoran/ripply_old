@@ -1,5 +1,6 @@
 var crypto = require('crypto')
-  , db = require('../../lib/mysql');
+  , db = require('../../lib/mysql')
+  , live = require('../../config').session.live;
 
 var Token = module.exports = function(body) {
   this.clientId = body.clientId;
@@ -31,34 +32,37 @@ Token.prototype = {
       }
     );
   }),
-  expire: db.connected(function(conn, callback) {
-    this.expired = true;
+  //expire: db.connected(function(conn, callback) {
+    //this.expired = true;
 
-    conn.query(
-      'UPDATE tokens SET ? WHERE ?', 
-      [
-        { expired: this.expired }, 
-        { id: this.id }
-      ], 
-      callback
-    );
-  }),
+    //conn.query(
+      //'UPDATE tokens SET ? WHERE ?', 
+      //[
+        //{ expired: this.expired }, 
+        //{ id: this.id }
+      //], 
+      //function(err) { callback(err) }
+    //);
+  //}),
   refresh: db.connected(function(conn, callback) {
     this.refreshToken = generateToken();
     this.accessToken = generateToken();
     this.updatedAt = new Date();
-    this.expired = false;
 
     conn.query(
       'UPDATE tokens SET ? WHERE ?', 
-      [
-        { refreshToken: this.refreshToken, accessToken: this.accessToken,
-          expired: false, updatedAt: this.updatedAt }, 
-        { id: this.id }
-      ], 
+      [{ refreshToken: this.refreshToken, accessToken: this.accessToken, 
+        updatedAt: this.updatedAt }, { id: this.id }], 
       callback);
   })
 }
+
+Object.defineProperty(Token.prototype, 'expired', {
+  get: function() {
+    var time = (Date.now() - this.updatedAt.getTime());
+    return (time > live);
+  }
+});
 
 Token.parse = function(record) {
   record.__proto__ = Token.prototype;

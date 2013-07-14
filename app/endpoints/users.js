@@ -36,7 +36,7 @@ ep.post('/', auth.client, authorized.register, function(req, res, next) {
   });
 });
 
-// get a user resource
+// get a user 
 ep.get('/:id', auth.token, function(req, res, next) {
   var user = req.user;
 

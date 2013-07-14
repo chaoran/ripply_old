@@ -1,6 +1,7 @@
 var express = require('express')
   , auth = require('../middlewares/authenticate')
-  , Token = require('../models/token');
+  , Token = require('../models/token')
+  , Session = require('../models/session');
 
 var tokens = module.exports = express();
 
@@ -27,12 +28,16 @@ tokens.post('/', function(req, res, next) {
   }, function(err, token) {
     if (err) return next(err);
 
-    res.send(200, {
-      access_token: token.accessToken,
-      expires_in: 3600,
-      token_type: 'Bearer',
-      scope: token.permissions.split('+'),
-      refresh_token: token.refreshToken,
+    Session.create(token, function(err) {
+      if (err) return next(err);
+
+      res.send(200, {
+        access_token: token.accessToken,
+        expires_in: 3600,
+        token_type: 'Bearer',
+        scope: token.permissions.split('+'),
+        refresh_token: token.refreshToken,
+      });
     });
   }); 
 });
@@ -55,12 +60,17 @@ tokens.put('/', function(req, res, next) {
 
     token.refresh(function(err) {
       if (err) return next(err);
-      res.send(200, {
-        access_token: token.accessToken,
-        expires_in: 3600,
-        token_type: 'Bearer',
-        scope: token.permissions.split('+'),
-        refresh_token: token.refreshToken,
+
+      Session.create(token, function(err) {
+        if (err) return next(err);
+
+        res.send(200, {
+          access_token: token.accessToken,
+          expires_in: 3600,
+          token_type: 'Bearer',
+          scope: token.permissions.split('+'),
+          refresh_token: token.refreshToken,
+        });
       });
     });
   });

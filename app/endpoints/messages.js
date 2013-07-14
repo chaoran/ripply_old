@@ -41,7 +41,7 @@ messages.get('/', function(req, res, next) {
 messages.post('/', authorized.post, function(req, res, next) {
   var message = new Message(req.body);
 
-  message.userId = req.session.userId;
+  message.userId = req.session.token.userId;
   message.save(function(err, message, up) {
     if (err) return next(err);
 
@@ -71,7 +71,7 @@ messages.param('id', function(req, res, next, id) {
 messages.put('/:id', authorized.up, function(req, res, next) {
   var up = new Up({
     messageId: req.message.id,
-    userId: req.session.userId
+    userId: req.session.token.userId
   });
 
   if (req.message.userId === up.userId) return res.send(403, {
@@ -92,7 +92,7 @@ messages.get('/:id', function(req, res, next) {
 messages.del('/:id', function(req, res, next) {
   var message = req.message;
 
-  if (message.userId === req.session.userId) {
+  if (message.userId === req.session.token.userId) {
     req.message.destroy(function(err) {
       if (err) return next(err);
       res.send(200);
