@@ -3,6 +3,7 @@ REPORTER = spec
 test: test-integration
 
 test-clean:
+	@NODE_ENV=test jake mailbox:clear
 	@NODE_ENV=test jake redis:flush
 	@NODE_ENV=test jake db:drop
 	@NODE_ENV=test jake db:create
